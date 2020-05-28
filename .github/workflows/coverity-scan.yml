@@ -50,10 +50,10 @@ jobs:
           mkdir build && cd build
           cmake \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$TRAVIS_BUILD_DIR/radare2-prefix;/opt/qt512" \
+            -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX;/opt/qt512" \
             -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
             -DBUILD_CUTTER_PLUGIN=ON \
-            -DCUTTER_SOURCE_DIR="$TRAVIS_BUILD_DIR/cutter" \
+            -DCUTTER_SOURCE_DIR="$GITHUB_WORKSPACE/cutter" \
             -DBUILD_SLEIGH_PLUGIN=ON \
             ..
 
