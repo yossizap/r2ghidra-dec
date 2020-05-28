@@ -1,7 +1,7 @@
 name: coverity-scan
-on:
-  schedule:
-    - cron: '0 9 * * 1,5' # Bi-weekly at 09:00 UTC on Monday and Thursday
+on:  [push]
+#  schedule:
+#    - cron: '0 9 * * 1,5' # Bi-weekly at 09:00 UTC on Monday and Thursday
 
 jobs:
   latest:
@@ -34,32 +34,60 @@ jobs:
         run: |
           pip install meson
 
+      - name: Prepare Radare2 and Cutter
+        run: |
+          export INSTALL_PREFIX=$GITHUB_WORKSPACE/radare2-prefix
+          git clone --depth 1 https://github.com/radareorg/radare2
+          cd radare2 && mkdir build && cd build
+          meson --prefix="$INSTALL_PREFIX" ..
+          ninja
+          ninja install
+          cd ../..
+          git clone --depth 1 https://github.com/radareorg/cutter
+
       - name: CMake
         run: |
-          scripts/fetch_deps.sh
-          source cutter-deps/env.sh
-          export LD_LIBRARY_PATH="`llvm-config --libdir`:$LD_LIBRARY_PATH"
-          mkdir build
-          cd build
-          cmake -DCUTTER_USE_BUNDLED_RADARE2=ON ../src
+          mkdir build && cd build
+          cmake
+            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_PREFIX_PATH="$TRAVIS_BUILD_DIR/radare2-prefix;/opt/qt512"
+            -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX"
+            -DBUILD_CUTTER_PLUGIN=ON
+            -DCUTTER_SOURCE_DIR="$TRAVIS_BUILD_DIR/cutter"
+            -DBUILD_SLEIGH_PLUGIN=ON
+            ..
 
-      - name: Build with cov-build
-        run: |
-          export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
-          cd build
-          cov-build --dir cov-int make
-
-      - name: Submit the result to Coverity Scan
+      - name: Build and Install
         run: |
           cd build
-          tar czvf r2ghidra.tgz cov-int
-          curl \
-            --form project=radareorg-cutter \
-            --form token=$TOKEN \
-            --form email=noreply@radare.org \
-            --form file=@r2ghidra.tgz \
-            --form version=trunk \
-            --form description="r2ghidra" \
-            https://scan.coverity.com/builds?project=radareorg%2Fr2ghidra-dec
-        env:
-          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+          make -j4
+          make install
+
+      - name: Test
+        run: |
+          export LD_LIBRARY_PATH="$INSTALL_PREFIX/lib:$INSTALL_PREFIX/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+          export PATH="$INSTALL_PREFIX/bin:$PATH"
+          export R2_LIBR_PLUGINS="$INSTALL_PREFIX/share/radare2/plugins"
+          cd test
+          make
+
+#      - name: Build with cov-build
+#        run: |
+#          export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
+#          cd build
+#          cov-build --dir cov-int make
+#
+#      - name: Submit the result to Coverity Scan
+#        run: |
+#          cd build
+#          tar czvf r2ghidra.tgz cov-int
+#          curl \
+#            --form project=radareorg-cutter \
+#            --form token=$TOKEN \
+#            --form email=noreply@radare.org \
+#            --form file=@r2ghidra.tgz \
+#            --form version=trunk \
+#            --form description="r2ghidra" \
+#            https://scan.coverity.com/builds?project=radareorg%2Fr2ghidra-dec
+#        env:
+#          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
