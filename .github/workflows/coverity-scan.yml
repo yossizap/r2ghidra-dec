@@ -36,10 +36,10 @@ jobs:
 
       - name: Prepare Radare2 and Cutter
         run: |
-          export INSTALL_PREFIX=$GITHUB_WORKSPACE/radare2-prefix
+          export INSTALL_PREFIX=$GITHUB_WORKSPACE}/radare2-prefix
           git clone --depth 1 https://github.com/radareorg/radare2
           cd radare2 && mkdir build && cd build
-          meson --prefix="$INSTALL_PREFIX" ..
+          meson --prefix="${INSTALL_PREFIX}" ..
           ninja
           ninja install
           cd ../..
@@ -47,6 +47,8 @@ jobs:
 
       - name: CMake
         run: |
+          export INSTALL_PREFIX=${GITHUB_WORKSPACE}/radare2-prefix
+          export PKG_CONFIG_PATH=${INSTALL_PREFIX}/lib/pkgconfig:${INSTALL_PREFIX}/lib/$(uname -m)-linux-gnu/pkgconfig:${PKG_CONFIG_PATH}
           mkdir build && cd build
           cmake \
             -DCMAKE_BUILD_TYPE=Release \
