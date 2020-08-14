@@ -28,6 +28,7 @@ jobs:
       with:
         update: true
         install: bison flex
+        inherit: inherit
     - name: py dependencies
       run: |
         pip install meson ninja
@@ -57,9 +58,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX;$INSTALL_PREFIX/include/libr;$INSTALL_PREFIX/include/libr/sdb;$QT64PATH" \
           -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-          -DRADARE2_INSTALL_PLUGDIR="$INSTALL_PREFIX/lib/plugins" \
           -DBUILD_CUTTER_PLUGIN=ON \
-          -DCUTTER_SOURCE_DIR="$GITHUB_WORKSPACE/cutter" \
+          -DCUTTER_SOURCE_DIR="${{ github.workspace }}/cutter" \
           -DBUILD_SLEIGH_PLUGIN=ON
-         - make -j4
         ninja
