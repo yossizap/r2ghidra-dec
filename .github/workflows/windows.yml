@@ -39,13 +39,14 @@ jobs:
         git clone --depth 1 https://github.com/radareorg/radare2
         git clone --depth 1 https://github.com/radareorg/cutter
     - name: Radare2 build
+      shell: bash
+      run: |
         cd radare2 && mkdir build && cd build
         meson --prefix="$INSTALL_PREFIX" ..
         ninja
         ninja install
         cd ../..
     - name: cmake msys
-      if: contains(matrix.os, 'windows-latest')
       shell: msys2
       run: |
         mkdir -p build && cd build
