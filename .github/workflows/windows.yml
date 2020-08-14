@@ -39,9 +39,11 @@ jobs:
     - name: set env
       run: echo '::set-env name=INSTALL_PREFIX::${{ github.workspace }}/radare2-prefix'
     - name: Radare2 build
-      shell: powershell
+      shell: cmd
       run: |
-        cd radare2 && mkdir build && cd build
+        cd radare2 
+        mkdir build
+        cd build
         meson --prefix="$INSTALL_PREFIX" ..
         ninja
         ninja install
