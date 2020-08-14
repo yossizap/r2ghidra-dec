@@ -49,7 +49,7 @@ jobs:
         ninja install
         cd ../..
     - name: cmake msys
-      shell: msys2
+      shell: msys2 {0}
       run: |
         mkdir -p build && cd build
         cmake ../ -G Ninja \
