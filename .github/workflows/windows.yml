@@ -26,10 +26,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.1
-    - uses: msys2/setup-msys2@v2
-      with:
-        update: true
-        install: bison flex
     - name: py dependencies
       run: |
         pip install meson ninja
