@@ -9,11 +9,9 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.config.os }}
+    runs-on: windows-latest
     strategy:
       matrix:
-        config:
-        - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl", environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat" }
         python-version: [3.7.x]   
         # Prevent one job from pausing the rest
         fail-fast: [false]
@@ -22,6 +20,7 @@ jobs:
       with:
         submodules: true
         persist-credentials: false
+    - uses: ilammy/msvc-dev-cmd@v1
     - uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
@@ -35,8 +34,8 @@ jobs:
         git clone --depth 1 https://github.com/radareorg/cutter
     - name: set env
       run: |
-        echo '::set-env name=INSTALL_PREFIX::${{ github.workspace }}/radare2-prefix'
-        echo '::set-env name=CUTTER_PATH::${{ github.workspace }}/cutter'
+        ::set-env name=INSTALL_PREFIX::${{ github.workspace }}/radare2-prefix
+        ::set-env name=CUTTER_PATH::${{ github.workspace }}/cutter
     - name: Radare2 build
       shell: cmd
       run: |
