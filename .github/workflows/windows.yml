@@ -53,4 +53,4 @@ jobs:
     - name: cmake msys
       shell: cmd
       run: |
-        C:\msys64\usr\bin\bash -lc "export PATH=\"/c/msys64/usr/bin:$PATH:`CYGPATH -u -p \"%PATH%\"`\" && cd \"${{ github.workspace }}\" && export INSTALL_PREFIX=\"${{ env.INSTALL_PREFIX }}" && export CUTTER_PATH=\"${{ env.CUTTER_PATH }}\" && ./scripts/msys_build.sh"
+        C:\msys64\usr\bin\bash -lc "export PATH=\"/c/msys64/usr/bin:$PATH:`CYGPATH -u -p \"%PATH%\"`\" && cd \"${{ github.workspace }}\" && export INSTALL_PREFIX=\"${{ env.INSTALL_PREFIX }}\" && export CUTTER_PATH=\"${{ env.CUTTER_PATH }}\" && ./scripts/msys_build.sh"
